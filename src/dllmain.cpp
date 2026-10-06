@@ -1,3 +1,6 @@
+// ABE-Decryptor
+// Author: encryptedroot
+// Discord: encryptedroot
 #include <algorithm>
 #include <iomanip>
 #include <optional>
