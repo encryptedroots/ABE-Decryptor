@@ -45,7 +45,7 @@ if __name__ == "__main__":
 
 	print("ABE-Decryptor")
 	print("by encryptedroot")
-	print()
+	print("discord: encryptedroot")
 
 	if "DevEnvDir" not in os.environ:
 		msg = (
