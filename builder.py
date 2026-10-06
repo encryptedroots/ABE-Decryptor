@@ -1,3 +1,6 @@
+# ABE-Decryptor
+# Author: encryptedroot
+# Discord: encryptedroot
 import os
 import sys
 import subprocess
