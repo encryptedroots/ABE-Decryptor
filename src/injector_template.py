@@ -1,3 +1,6 @@
+# ABE-Decryptor
+# Author: encryptedroot
+# Discord: encryptedroot
 import base64
 import ctypes
 import random
