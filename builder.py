@@ -16,7 +16,6 @@ class Color(Enum):
 	WHITE = "\033[37m"
 
 
-
 def log(message: str, color: Color = Color.RESET, symbol: str = ""):
 	lines = message.split("\n")
 	first_prefix = f"[{symbol}] " if symbol else ""
@@ -24,6 +23,7 @@ def log(message: str, color: Color = Color.RESET, symbol: str = ""):
 	for i, line in enumerate(lines):
 		prefix = first_prefix if i == 0 else " " * len(first_prefix)
 		print(f"{color.value}{prefix}{line}{Color.RESET.value}")
+
 
 if __name__ == "__main__":
 	input_file_name = "dllmain.cpp"
@@ -43,8 +43,12 @@ if __name__ == "__main__":
 
 	os.system("cls")
 
+	print("ABE-Decryptor")
+	print("by encryptedroot")
+	print()
+
 	if "DevEnvDir" not in os.environ:
-		msg =  (
+		msg = (
 			"ERROR: MSVC build environment not detected.\n"
 			"This script must be run from a\n"
 			'"x64 Native Tools Command Prompt for VS <version>".\n'
@@ -55,9 +59,12 @@ if __name__ == "__main__":
 
 	arch = os.environ.get("VSCMD_ARG_TGT_ARCH")
 	if arch and arch.lower() != "x64":
-		log(f"ERROR: {arch} build environment detected instead of x64.", Color.RED, "!")
+		log(
+			f"ERROR: {arch} build environment detected instead of x64.",
+			Color.RED,
+			"!"
+		)
 		sys.exit(1)
-	
 
 	if not cpp_path.is_file():
 		log(f"Missing input file: {cpp_path}", Color.RED, "!")
@@ -67,8 +74,11 @@ if __name__ == "__main__":
 		log(f"Missing Python file: {py_path}", Color.RED, "!")
 		sys.exit(1)
 
-
-	log(f"Compiling src/{cpp_path.name} -> build/{dll_path.name} ...", Color.CYAN, "*")
+	log(
+		f"Compiling src/{cpp_path.name} -> build/{dll_path.name} ...",
+		Color.CYAN,
+		"*"
+	)
 
 	compile_cmd = [
 		"cl",
@@ -101,7 +111,7 @@ if __name__ == "__main__":
 		"odbc32.lib",
 		"odbccp32.lib",
 	]
-	
+
 	result = subprocess.run(
 		compile_cmd,
 		cwd=root,
@@ -122,36 +132,70 @@ if __name__ == "__main__":
 	if obj_path.exists():
 		obj_path.unlink()
 
-
 	if not dll_path.is_file():
-		log(f"ERROR: Expected DLL not found: {dll_path}", Color.RED, "!")
+		log(
+			f"ERROR: Expected DLL not found: {dll_path}",
+			Color.RED,
+			"!"
+		)
 		sys.exit(1)
 
-	log(f"Encoding {dll_path.name} as Base64...", Color.CYAN, "*")
+	log(
+		f"Encoding {dll_path.name} as Base64...",
+		Color.CYAN,
+		"*"
+	)
 
 	dll_bytes = dll_path.read_bytes()
-	b64_str = base64.b64encode(dll_bytes).decode("ascii")  
+	b64_str = base64.b64encode(dll_bytes).decode("ascii")
 
-	log(f"Assembling {output_file_name} ...", Color.CYAN, "*")
+	log(
+		f"Assembling {output_file_name} ...",
+		Color.CYAN,
+		"*"
+	)
 
 	original_text = py_path.read_text(encoding="utf-8")
 
-	pattern = re.compile(r"^WRAPPED_DLL\s*=.*$", re.MULTILINE)
+	pattern = re.compile(
+		r"^WRAPPED_DLL\s*=.*$",
+		re.MULTILINE
+	)
+
 	replacement_line = f"WRAPPED_DLL = '{b64_str}'"
 
-	new_text, count = pattern.subn(replacement_line, original_text)
+	new_text, count = pattern.subn(
+		replacement_line,
+		original_text
+	)
 
 	if count == 0:
-		log(f"ERROR: No line matching 'WRAPPED_DLL = ...' was found in {python_file_name}.", Color.RED, "!")
+		log(
+			f"ERROR: No line matching 'WRAPPED_DLL = ...' "
+			f"was found in {python_file_name}.",
+			Color.RED,
+			"!"
+		)
 		sys.exit(1)
 
-
-	with open(f"build/{output_file_name}", "w", encoding="utf-8") as f:
+	with open(
+		build / output_file_name,
+		"w",
+		encoding="utf-8"
+	) as f:
 		f.write(new_text)
 
 	try:
 		dll_path.unlink()
 	except OSError:
-		log(f"Warning: could not delete {dll_path}", Color.YELLOW, "~")
+		log(
+			f"Warning: could not delete {dll_path}",
+			Color.YELLOW,
+			"~"
+		)
 
-	log(f"Wrote file to build/{output_file_name}", Color.GREEN, "+")
+	log(
+		f"Wrote file to build/{output_file_name}",
+		Color.GREEN,
+		"+"
+	)
