@@ -1,5 +1,6 @@
 # ABE-Decryptor
-
+# Author: encryptedroot
+# Discord: encryptedroot
 A Windows proof-of-concept for researching App-Bound Encryption (ABE) in Chromium-based browsers.
 
 ## Features & Compatibility
