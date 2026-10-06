@@ -1,54 +1,77 @@
-ABE-Decryption
-tool that enables user-mode decryption of cookies for Chromium-based browsers that have implemented App-Bound Encryption (ABE)
+ABE-Decryptor
+
+A Windows proof-of-concept for researching App-Bound Encryption (ABE) in Chromium-based browsers.
 
 Features & Compatibility
-Works on Google Chrome, Brave and Microsoft Edge
-Tested on the most recent stable version (Chromium v144)
-Extracts all cookies from all profiles for each browser without requiring administrator privileges
-Flow
-For each of the three supported browsers, the script:
 
-Checks the install path of the browser
-Launches the browser in suspended mode
-Sets up a named pipe using a deterministic algorithm for the name
-Decodes the dll and writes it to a temp directory
-Injects the dll into the browser using LoadLibraryA
-Reads the encrypted ABE key from the browser's Local State file
-Waits for the injected dll to connect to the pipe and sends the encrypted ABE key once connected
-The dll calls the decrypt function on the browser's internal Elevator COM interface and sends the now decrypted ABE key back through the same pipe
-Once the decrypted key is received, terminates the suspended process and closes the pipe
-Finds all browser profiles and their associated cookie databases
-Copies each cookie database to a temp directory, which might require killing the browser process if running
-Extracts the cookies and decrypts them using the decrypted ABE key
-Writes the decrypted cookies to cookies/{BROWSER NAME}_{PROFILE NAME}_cookies.txt in Netscape format
-For a more detailed explanation of how the key decryption itself works, check out the Research done by xaitax
+Supports Chromium-based browsers including Google Chrome, Brave, and Microsoft Edge
+
+Tested against recent stable Chromium releases
+
+Windows x64 support
+
+Does not require administrator privileges for the demonstrated research workflow
+
+Python-based build system
+
+Overview
+
+ABE-Decryptor demonstrates research into the App-Bound Encryption mechanisms used by Chromium-based browsers and the handling of data protected by those mechanisms.
+
+The project is intended primarily as a proof of concept for studying Chromium's ABE implementation and related Windows components.
 
 Building
-Requirements
-Python 3.12 (other recent Python 3 versions will likely work)
-MSVC x64 build environment (e.g., “x64 Native Tools Command Prompt for VS”)
-Process
-Open a command prompt with a 64-bit MSVC environment enabled
-Run python builder.py
-The output file will be in build/injector.py
-Optional
-Install the requirements from requirements.txt via pip install -r requirements.txt
 
-While this is not required for building the final file, it is a requirement to run the injector
+Requirements
+
+Python 3.12 or another recent Python 3 version
+
+MSVC x64 build environment
+
+Visual Studio or the corresponding Build Tools
+
+Process
+
+Open a command prompt with the x64 MSVC environment enabled and run:
+
+python builder.py
+
+Build output is placed in the build directory.
+
+Additional Python dependencies can be installed with:
+
+pip install -r requirements.txt
 
 Limitations
-While this tool gets the job done, it is merely a POC and not meant to be used in a production environment, as it has several limitations
+
+This project is a proof of concept and is not intended for production use.
 
 Platform Support
-This tool only works on Windows x64
-Windows ARM64 is currently not supported
+
+Currently supported:
+
+Windows x64
+
+Windows ARM64 is not currently supported.
+
 Detection
-This tool doesn't implement any EDR or AV evasion techniques and will therefore likely get detected by them
-No Encryption: The dll is stored unencrypted as a base64 blob
-No Syscalls: The entire process uses high-level Windows API calls, making it trivial for AV solutions to block them. This includes writing the dll to disk directly and using LoadLibraryA for injection
-As chromium browsers can be very strict with who is allowed to access the cookie database, this also kills the browser process, making it very obvious to the user what is happening
-Third-party Research
-This project wouldn't have been possible without the research found in xaitax/Chrome-App-Bound-Encryption-Decryption. A good chunk of the C++ code of this project is also an adapted version of that project's chrome_decrypt.cpp. Check out THIRD_PARTY_LICENSES for information on the licensing.
+
+The implementation does not include EDR or antivirus evasion techniques.
+
+It relies on conventional Windows APIs and should therefore be expected to trigger security products. The project is intended for research and analysis rather than stealth or evasion.
+
+Third-Party Research
+
+This project builds upon publicly available research into Chromium's App-Bound Encryption implementation.
+
+Relevant research:
+
+xaitax/Chrome-App-Bound-Encryption-Decryption
+
+See THIRD_PARTY_LICENSES for information regarding third-party code and licensing.
 
 Disclaimer
-This is a proof-of-concept project and is NOT meant to be used to get unauthorized access to user data or to be used in malware campaigns
+
+ABE-Decryptor is provided for security research, reverse engineering, and educational purposes.
+
+It is not intended to obtain unauthorized access to user data, bypass security controls, or be incorporated into malware or other malicious software.
